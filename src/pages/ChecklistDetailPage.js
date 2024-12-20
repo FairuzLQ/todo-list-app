@@ -38,15 +38,15 @@ const ChecklistDetailPage = () => {
 
   // Add or edit an item in the checklist
   const handleItemSubmit = async () => {
-    if (!itemName) return;
+    if (!itemName) return; // Make sure item name is not empty
     setLoading(true);
     try {
       if (editItemId) {
-        // Update existing item
+        // Rename existing item using the correct endpoint
         await API.put(
-          `/checklist/${checklistId}/item/${editItemId}`,
+          `/checklist/${checklistId}/item/rename/${editItemId}`, // Correct endpoint for renaming
           {
-            itemName: itemName, // Corrected field name here
+            itemName: itemName, // Send the new name
           },
           {
             headers: {
@@ -58,7 +58,7 @@ const ChecklistDetailPage = () => {
         // Add new item
         await API.post(
           `/checklist/${checklistId}/item`,
-          { itemName: itemName }, // Correct field name here
+          { itemName: itemName },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
