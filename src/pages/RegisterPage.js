@@ -21,7 +21,7 @@ const RegisterPage = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Create Your Account</h2>
+      <h2 style={styles.title}>Create Your To Do List Account</h2>
       {error && <p style={styles.error}>{error}</p>}
       <form onSubmit={handleRegister} style={styles.form}>
         <input
@@ -67,42 +67,63 @@ const RegisterPage = () => {
 
 const styles = {
   container: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
     maxWidth: "400px",
     margin: "50px auto",
-    padding: "20px",
-    textAlign: "center",
-    border: "1px solid #ccc",
+    padding: "30px",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
     borderRadius: "8px",
-    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
   },
   title: {
     marginBottom: "20px",
+    fontSize: "24px",
+    fontWeight: "600",
+    color: "#333",
   },
   error: {
-    color: "red",
+    color: "#f44336",
     marginBottom: "15px",
+    fontSize: "14px",
+    textAlign: "center",
   },
   form: {
     display: "flex",
     flexDirection: "column",
+    width: "100%",
   },
   input: {
-    padding: "10px",
+    padding: "12px 15px",
     margin: "10px 0",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
+    border: "1px solid #ddd",
+    borderRadius: "6px",
+    fontSize: "14px",
+    transition: "border-color 0.3s ease, box-shadow 0.3s ease",
+  },
+  inputFocus: {
+    borderColor: "#007bff",
+    boxShadow: "0 0 5px rgba(0, 123, 255, 0.5)",
   },
   button: {
-    padding: "10px",
-    backgroundColor: "#28a745",
+    padding: "12px 15px",
+    backgroundColor: "#007bff",
     color: "#fff",
     border: "none",
-    borderRadius: "4px",
+    borderRadius: "6px",
     cursor: "pointer",
     marginTop: "10px",
+    transition: "background-color 0.3s ease",
+  },
+  buttonHover: {
+    backgroundColor: "#218838",
   },
   link: {
     marginTop: "15px",
+    fontSize: "14px",
     color: "#555",
   },
   loginLink: {
@@ -110,6 +131,18 @@ const styles = {
     cursor: "pointer",
     textDecoration: "underline",
   },
+};
+
+// Add focus effect on input fields
+const inputFocusStyle = (inputElement) => {
+  inputElement.addEventListener('focus', () => {
+    inputElement.style.borderColor = "#007bff";
+    inputElement.style.boxShadow = "0 0 5px rgba(0, 123, 255, 0.5)";
+  });
+  inputElement.addEventListener('blur', () => {
+    inputElement.style.borderColor = "#ddd";
+    inputElement.style.boxShadow = "none";
+  });
 };
 
 export default RegisterPage;
