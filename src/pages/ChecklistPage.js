@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import API from "../services/api"; // Ensure token handling is configured
+import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 const ChecklistPage = () => {
   const [checklists, setChecklists] = useState([]);
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [checklistToDelete, setChecklistToDelete] = useState(null); // Track checklist to be deleted
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,10 +29,8 @@ const ChecklistPage = () => {
         },
       });
 
-      // Check the response status code
       if (response.data.statusCode === 2100) {
-        console.log("Fetched checklists:", response.data.data); // Log the response
-        setChecklists(response.data.data); // Update the state with the fetched checklists
+        setChecklists(response.data.data);
       } else {
         console.error("Failed to fetch checklists:", response.data.message);
       }
@@ -59,9 +59,7 @@ const ChecklistPage = () => {
           },
         }
       );
-      console.log("Added checklist:", response.data);
 
-      // Use response data to update the checklists list
       if (response.data && response.data.data) {
         const newChecklist = response.data.data;
         setChecklists((prevChecklists) => [
@@ -78,7 +76,20 @@ const ChecklistPage = () => {
     }
   };
 
-  // Delete a checklist by ID
+  // Check if checklist has items
+  const hasItems = (checklist) => checklist.items && checklist.items.length > 0;
+
+  // Open modal for deleting checklist
+  const openDeleteModal = (checklist) => {
+    if (hasItems(checklist)) {
+      setChecklistToDelete(checklist);
+      setShowModal(true);
+    } else {
+      deleteChecklist(checklist.id);
+    }
+  };
+
+  // Delete checklist by ID
   const deleteChecklist = async (id, token) => {
     setLoading(true);
     try {
@@ -87,7 +98,6 @@ const ChecklistPage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Deleted checklist:", response.data);
       fetchChecklists(token); // Refresh checklist after deleting
     } catch (err) {
       console.error("Failed to delete checklist:", err);
@@ -100,6 +110,13 @@ const ChecklistPage = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/"); // Redirect to login page
+  };
+
+  // Confirm modal action
+  const confirmDelete = () => {
+    const token = localStorage.getItem("token");
+    deleteChecklist(checklistToDelete.id, token);
+    setShowModal(false);
   };
 
   return (
@@ -144,7 +161,7 @@ const ChecklistPage = () => {
                   ))}
                 </div>
               ) : (
-                <p>No items to complete yet.</p> // Pesan jika items null atau kosong
+                <p>No items to complete yet.</p>
               )}
               <div style={styles.actions}>
                 <button
@@ -154,10 +171,7 @@ const ChecklistPage = () => {
                   View
                 </button>
                 <button
-                  onClick={() => {
-                    const token = localStorage.getItem("token");
-                    deleteChecklist(checklist.id, token);
-                  }}
+                  onClick={() => openDeleteModal(checklist)}
                   style={styles.deleteButton}
                   disabled={loading}
                 >
@@ -173,6 +187,24 @@ const ChecklistPage = () => {
       <button onClick={handleLogout} style={styles.logoutButton}>
         Logout
       </button>
+
+      {/* Modal */}
+      {showModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h3>Warning</h3>
+            <p>There are items in this checklist. You must remove all items before deleting the checklist.</p>
+            <div style={styles.modalActions}>
+              <button onClick={() => setShowModal(false)} style={styles.cancelButton}>
+                Cancel
+              </button>
+              <button onClick={confirmDelete} style={styles.confirmButton}>
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -254,6 +286,45 @@ const styles = {
     borderRadius: "4px",
     cursor: "pointer",
     marginTop: "20px",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modal: {
+    padding: "20px",
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    textAlign: "center",
+    width: "300px",
+  },
+  modalActions: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "10px",
+  },
+  cancelButton: {
+    padding: "5px 10px",
+    backgroundColor: "#6c757d",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  confirmButton: {
+    padding: "5px 10px",
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
   },
 };
 
