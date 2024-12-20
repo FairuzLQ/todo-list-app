@@ -143,6 +143,13 @@ const ChecklistDetailPage = () => {
 
   return (
     <div style={styles.container}>
+      {/* Back Button */}
+      <button
+        onClick={() => navigate("/checklists")} // Navigate to the checklist list page
+        style={styles.backButton}
+      >
+        Back to Checklists
+      </button>
       <h2>Checklist Detail</h2>
       <div style={styles.addChecklistItem}>
         <input
@@ -243,6 +250,15 @@ const styles = {
     padding: "20px",
     textAlign: "center",
   },
+  backButton: {
+    padding: "10px 20px",
+    backgroundColor: "#6c757d",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    marginBottom: "20px",
+  },
   addChecklistItem: {
     display: "flex",
     justifyContent: "center",
@@ -264,19 +280,16 @@ const styles = {
     cursor: "pointer",
   },
   checklistItemContainer: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "15px",
+    marginBottom: "20px",
   },
   checklistCard: {
+    backgroundColor: "#fff",
     padding: "15px",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-    textAlign: "left",
+    marginBottom: "10px",
+    borderRadius: "4px",
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
   },
   actions: {
-    marginTop: "10px",
     display: "flex",
     justifyContent: "space-between",
   },
@@ -311,7 +324,6 @@ const styles = {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
-    marginTop: "20px",
   },
   modalOverlay: {
     position: "fixed",
@@ -325,19 +337,19 @@ const styles = {
     alignItems: "center",
   },
   modal: {
-    padding: "20px",
     backgroundColor: "#fff",
-    borderRadius: "8px",
-    textAlign: "center",
-    width: "300px",
+    padding: "20px",
+    borderRadius: "4px",
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+    maxWidth: "400px",
+    width: "100%",
   },
   modalActions: {
     display: "flex",
     justifyContent: "space-between",
-    marginTop: "10px",
   },
   cancelButton: {
-    padding: "5px 10px",
+    padding: "10px 20px",
     backgroundColor: "#6c757d",
     color: "#fff",
     border: "none",
@@ -345,7 +357,7 @@ const styles = {
     cursor: "pointer",
   },
   confirmButton: {
-    padding: "5px 10px",
+    padding: "10px 20px",
     backgroundColor: "#dc3545",
     color: "#fff",
     border: "none",
