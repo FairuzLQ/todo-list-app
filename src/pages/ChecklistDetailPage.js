@@ -8,6 +8,8 @@ const ChecklistDetailPage = () => {
   const [itemName, setItemName] = useState("");
   const [editItemId, setEditItemId] = useState(null); // Track item being edited
   const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // Modal state
+  const [loadingDeleteAll, setLoadingDeleteAll] = useState(false); // Loading state for delete all
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -117,6 +119,28 @@ const ChecklistDetailPage = () => {
     }
   };
 
+  // Delete all items
+  const deleteAllItems = async () => {
+    setLoadingDeleteAll(true);
+    try {
+      await Promise.all(
+        items.map((item) =>
+          API.delete(`/checklist/${checklistId}/item/${item.id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          })
+        )
+      );
+      fetchItems(); // Refresh items after deletion
+    } catch (err) {
+      console.error("Failed to delete all checklist items:", err);
+    } finally {
+      setLoadingDeleteAll(false);
+      setShowDeleteModal(false); // Close the delete confirmation modal
+    }
+  };
+
   return (
     <div style={styles.container}>
       <h2>Checklist Detail</h2>
@@ -172,6 +196,42 @@ const ChecklistDetailPage = () => {
           <p>No items available. Add one to get started!</p>
         )}
       </div>
+
+      {/* Delete All Button */}
+      {items.length > 0 && (
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          style={styles.deleteAllButton}
+          disabled={loadingDeleteAll}
+        >
+          {loadingDeleteAll ? "Deleting All..." : "Delete All Items"}
+        </button>
+      )}
+
+      {/* Modal for confirming deletion of all items */}
+      {showDeleteModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h3>Are you sure?</h3>
+            <p>This will delete all items in the checklist. This action cannot be undone.</p>
+            <div style={styles.modalActions}>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                style={styles.cancelButton}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteAllItems}
+                style={styles.confirmButton}
+                disabled={loadingDeleteAll}
+              >
+                {loadingDeleteAll ? "Deleting..." : "Confirm"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -237,6 +297,54 @@ const styles = {
     cursor: "pointer",
   },
   deleteButton: {
+    padding: "5px 10px",
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  deleteAllButton: {
+    padding: "10px 20px",
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    marginTop: "20px",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modal: {
+    padding: "20px",
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    textAlign: "center",
+    width: "300px",
+  },
+  modalActions: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "10px",
+  },
+  cancelButton: {
+    padding: "5px 10px",
+    backgroundColor: "#6c757d",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  confirmButton: {
     padding: "5px 10px",
     backgroundColor: "#dc3545",
     color: "#fff",
